@@ -1,0 +1,72 @@
+# Most people should not run this file directly - use the start / stop scripts
+# (start.bat / stop.bat on Windows, start.sh / stop.sh on Mac and Linux).
+#
+#   frontend  the web app          http://localhost:5173
+#   backend   FastAPI + SQLite     http://localhost:8000/docs
+#   ollama    the free AI model    (only reachable by the backend)
+#
+# Safety choices for laptops:
+#   - restart: "no"      nothing starts by itself when the computer boots
+#   - 127.0.0.1:...      the app is only reachable from this computer, not from the Wi-Fi network
+#   - OLLAMA_KEEP_ALIVE  the AI model leaves memory 5 minutes after the last use
+
+# A fixed name, so Docker shows the same name whatever the folder is called
+name: project-knowledge-hub
+
+services:
+  backend:
+    build: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: "no"
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"         # lets Linux reach an Ollama app on the computer itself
+    volumes:
+      - ./backend/app:/app/app                        # edit code -> server reloads
+      - ./backend/sample_documents:/app/sample_documents
+      - ./data:/app/data                              # the database file lives here
+
+  frontend:
+    build: ./frontend
+    restart: "no"
+    ports:
+      - "127.0.0.1:5173:5173"
+    environment:
+      API_TARGET: http://backend:8000
+    volumes:
+      - ./frontend/src:/app/src                       # edit code -> page reloads
+    depends_on:
+      - backend
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: "no"
+    environment:
+      OLLAMA_CONTEXT_LENGTH: 8192                     # room for a document of ~12,000 characters
+      OLLAMA_KEEP_ALIVE: 5m                           # free the memory 5 minutes after the last use
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      retries: 20
+
+  # Downloads the AI model once (about 2 GB for qwen2.5:3b). The start script
+  # runs it only when the model is missing. It runs on the CPU - no GPU needed.
+  ollama-pull:
+    image: ollama/ollama:latest
+    profiles: ["setup"]
+    restart: "no"
+    environment:
+      OLLAMA_HOST: ollama:11434
+    entrypoint: ["ollama", "pull", "${LLM_MODEL:-qwen2.5:3b}"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+volumes:
+  ollama_models:

@@ -1,0 +1,6 @@
+# Keep the right line endings so the scripts work on every computer,
+# also when someone downloads the project as a ZIP file.
+* text=auto
+*.sh  text eol=lf
+*.bat -text
+Dockerfile text eol=lf
