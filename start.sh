@@ -26,10 +26,13 @@ fi
 MODEL=$(grep -E '^LLM_MODEL=' .env | tail -1 | cut -d= -f2- | tr -d '[:space:]')
 MODEL=${MODEL:-qwen2.5:3b}
 BASE_URL=$(grep -E '^LLM_BASE_URL=' .env | tail -1 | cut -d= -f2- | tr -d '[:space:]')
+APP_PORT=$(grep -E '^APP_PORT=' .env | tail -1 | cut -d= -f2- | tr -d '[:space:]')
+APP_PORT=${APP_PORT:-5173}
 
 # 3. Build and start (the first time this downloads a few GB - please be patient)
 say "Step 1 of 3 - preparing the app (first time: 5-15 minutes)"
-docker compose up -d --build backend frontend || fail "Could not start the app. See the messages above."
+docker compose up -d --build backend frontend || fail "Could not start the app. See the messages above.
+If it says 'port is already allocated', another program uses that port: open .env and change APP_PORT or API_PORT (for example 5180 and 8001)."
 
 # 4. The AI model - only when we use the built-in Ollama
 case "$BASE_URL" in
@@ -51,11 +54,11 @@ esac
 # 5. Wait until the web app answers, then open it
 say "Step 3 of 3 - opening the app"
 for _ in $(seq 1 60); do
-  if curl -fs http://localhost:5173/api/health >/dev/null 2>&1; then break; fi
+  if curl -fs "http://localhost:$APP_PORT/api/health" >/dev/null 2>&1; then break; fi
   sleep 2
 done
 
-URL="http://localhost:5173"
+URL="http://localhost:$APP_PORT"
 if command -v open >/dev/null 2>&1; then open "$URL"
 elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$URL" >/dev/null 2>&1
 fi

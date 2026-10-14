@@ -107,6 +107,9 @@ def extract_with_rules(text: str, fields: list[dict], separator: str) -> dict:
             value = found if f["multiple"] else (found[0] if found else None)
         elif value is None and key == "title":
             value = first_lines[0][:150] if first_lines else None
+        elif value is None and key.startswith("sdg"):
+            numbers = sorted({int(n) for n in re.findall(r"\bSDG\s*(\d{1,2})\b", text, re.IGNORECASE) if 1 <= int(n) <= 17})
+            value = [f"SDG {n}" for n in numbers] or None
         elif value is None and key == "keywords":
             words = re.findall(r"[a-z]{5,}", lower)
             counts: dict[str, int] = {}

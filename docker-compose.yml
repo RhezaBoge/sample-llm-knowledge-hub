@@ -1,8 +1,8 @@
 # Most people should not run this file directly - use the start / stop scripts
 # (start.bat / stop.bat on Windows, start.sh / stop.sh on Mac and Linux).
 #
-#   frontend  the web app          http://localhost:5173
-#   backend   FastAPI + SQLite     http://localhost:8000/docs
+#   frontend  the web app          http://localhost:5173       (APP_PORT in .env)
+#   backend   FastAPI + SQLite     http://localhost:8000/docs  (API_PORT in .env)
 #   ollama    the free AI model    (only reachable by the backend)
 #
 # Safety choices for laptops:
@@ -19,7 +19,7 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     restart: "no"
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:${API_PORT:-8000}:8000"
     env_file:
       - path: .env
         required: false
@@ -34,7 +34,7 @@ services:
     build: ./frontend
     restart: "no"
     ports:
-      - "127.0.0.1:5173:5173"
+      - "127.0.0.1:${APP_PORT:-5173}:5173"
     environment:
       API_TARGET: http://backend:8000
     volumes:

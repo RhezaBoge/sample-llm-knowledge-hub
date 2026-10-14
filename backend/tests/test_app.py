@@ -37,7 +37,7 @@ def test_normalize_splits_multiple_values_and_cleans_types():
     assert record["end_date"] == "2025-02-28"
     assert record["keywords"] == ["water, hygiene"]  # only ';' separates values
     assert record["summary"] is None  # placeholder copied by a small model
-    assert any("Not found in the document: City, Summary" in w for w in warnings)
+    assert any("Not found in the document: City, Summary, SDGs" in w for w in warnings)
 
 
 def test_single_valued_field_with_several_values_warns():

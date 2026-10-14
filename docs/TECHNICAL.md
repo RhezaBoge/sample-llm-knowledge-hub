@@ -91,7 +91,7 @@ wait for `/api/health`, and open the browser. `stop.*` runs `docker compose --pr
 
 The template is the list of fields every project has. It lives in the database
 (table `template_fields`, plus the separator in `settings`) and is edited on the
-*Set up your fields* page. On first start `template.seed_defaults()` inserts eight fields:
+*Set up your fields* page. On first start `template.seed_defaults()` inserts nine fields:
 
 | Key | Label | Type | Several values |
 |---|---|---|---|
@@ -103,6 +103,7 @@ The template is the list of fields every project has. It lives in the database
 | `end_date` | End date | date | no |
 | `summary` | Summary | text | no |
 | `keywords` | Keywords | text | yes |
+| `sdgs` | SDGs | text | yes |
 
 Each field also has a **prompt** – its instruction for the LLM. `template.validate()` checks the
 template before saving: every field needs a label and a prompt; keys must match
@@ -266,7 +267,7 @@ Interactive documentation is available at <http://localhost:8000/docs> while the
 | GET | `/api/health` | model reachability, model downloaded, geocoder on/off |
 | GET | `/api/template` | fields, separator, number of saved projects |
 | PUT | `/api/template` | replace the whole template |
-| POST | `/api/template/reset` | restore the 8 default fields |
+| POST | `/api/template/reset` | restore the 9 default fields |
 | POST | `/api/template/prompt` | the prompt the model would receive |
 | GET | `/api/samples`, `/api/samples/{name}` | sample documents |
 | POST | `/api/read-file` | upload → plain text |

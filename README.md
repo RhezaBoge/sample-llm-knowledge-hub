@@ -172,11 +172,12 @@ background, and your saved projects stay safe in the `data` folder.
 The app has three steps, shown at the top of the page.
 
 1. **Set up your fields** – which facts to collect from every document. By default: Project title,
-   Implementing organization, Country, City, Start date, End date, Summary, Keywords.
+   Implementing organization, Country, City, Start date, End date, Summary, Keywords, SDGs.
    Every field has its **own instruction for the AI**, a type (text / date / number), and a switch
    *Several values* (separated by `;`). Add, rename, reorder or remove fields and click
    **Save template**. *Show the AI prompt* displays the exact question the AI receives.
 2. **Add a project** – upload a document, paste text, or load one of the sample documents.
+   Twenty more fictional documents to try are in [docs/datatest](docs/datatest/).
    - **Markdown (`.md`) works best**: it keeps headings, lists and tables as clean text.
      For a document in Google Drive: open it in Google Docs → *File → Download → Markdown (.md)*.
      Word (`.docx`), PDF and `.txt` also work. Scanned PDFs (photos of pages) do not contain text.
@@ -242,7 +243,7 @@ graphics chip), run `ollama pull qwen2.5:3b` in Terminal, and set
 | *Docker is not installed* | Do [Step 1](#step-1--install-docker-desktop-one-time). |
 | *Docker is installed but not running* | Open Docker Desktop and wait until it shows **Engine running**, then start again. |
 | Windows: a message about **WSL** | Open PowerShell, run `wsl --update`, restart the computer. |
-| *port is already allocated* | Another program uses port 5173 or 8000. Run stop, restart the computer, start again. |
+| *port is already allocated* | Another program uses port 5173 or 8000. Open `.env` and change `APP_PORT` / `API_PORT` (e.g. `5180` and `8001`), then start again. The app then opens at `http://localhost:5180`. |
 | The app says **AI model offline** | Run start again. Meanwhile, *Simple rules (no AI)* still works. |
 | *Model download failed* | Check your internet connection and run start again. It continues where it stopped. |
 | The AI takes very long or stops | Choose a smaller model (see above), or give Docker more memory: Docker Desktop → **Settings → Resources → Memory**. Close other programs. |
@@ -335,7 +336,9 @@ in [backend/app/template.py](backend/app/template.py).
 │   └── src/
 │       ├── pages/              # TemplateSetup, AddProject, KnowledgeBase
 │       └── components/         # map, review form, small UI pieces
-├── docs/TECHNICAL.md          # architecture and how the system is built
+├── docs/
+│   ├── TECHNICAL.md            # architecture and how the system is built
+│   └── datatest/               # 20 fictional project documents (.md) to try
 └── .github/workflows/ci.yml    # tests + build on every push
 ```
 

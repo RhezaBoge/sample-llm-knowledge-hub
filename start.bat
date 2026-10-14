@@ -29,6 +29,8 @@ set "MODEL=qwen2.5:3b"
 for /f "tokens=1,* delims==" %%a in ('findstr /b "LLM_MODEL=" .env') do set "MODEL=%%b"
 set "BASE_URL="
 for /f "tokens=1,* delims==" %%a in ('findstr /b "LLM_BASE_URL=" .env') do set "BASE_URL=%%b"
+set "APP_PORT=5173"
+for /f "tokens=1,* delims==" %%a in ('findstr /b "APP_PORT=" .env') do set "APP_PORT=%%b"
 
 rem 3. Build and start (the first time this downloads a few GB - please be patient)
 echo.
@@ -36,6 +38,8 @@ echo Step 1 of 3 - preparing the app (first time: 5-15 minutes)
 docker compose up -d --build backend frontend
 if errorlevel 1 (
   echo Could not start the app. See the messages above.
+  echo If it says "port is already allocated", another program uses that port:
+  echo open .env with Notepad and change APP_PORT or API_PORT ^(for example 5180 and 8001^).
   goto :end
 )
 
@@ -62,13 +66,13 @@ rem 5. Wait until the web app answers, then open it
 echo.
 echo Step 3 of 3 - opening the app
 for /l %%i in (1,1,60) do (
-  curl -fs http://localhost:5173/api/health >nul 2>&1 && goto :ready
+  curl -fs http://localhost:%APP_PORT%/api/health >nul 2>&1 && goto :ready
   timeout /t 2 /nobreak >nul
 )
 :ready
-start "" http://localhost:5173
+start "" http://localhost:%APP_PORT%
 echo.
-echo Ready!  The app is open at http://localhost:5173
+echo Ready!  The app is open at http://localhost:%APP_PORT%
 echo When you are finished, double-click stop.bat
 echo.
 

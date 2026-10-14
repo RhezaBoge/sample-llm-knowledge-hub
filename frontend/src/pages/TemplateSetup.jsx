@@ -19,6 +19,66 @@ const slugify = (label) => {
   return key.slice(0, 40)
 }
 
+// Example values for the "What is stored" preview (the Safe Motherhood Turkana sample)
+const EXAMPLES = {
+  title: 'Safe Motherhood Turkana',
+  organization: ['Afya Bora Partners'],
+  country: ['Kenya'],
+  city: ['Lodwar', 'Kakuma'],
+  start_date: '2021-01',
+  end_date: '2024-06',
+  summary: 'Improved maternal health in Turkana County through antenatal care and trained health volunteers.',
+  keywords: ['maternal health', 'antenatal care'],
+  sdgs: ['SDG 3: Good Health and Well-being', 'SDG 5: Gender Equality'],
+}
+const PLACES = {
+  Lodwar: [35.5973, 3.1191],
+  Kakuma: [34.8735, 3.7063],
+  Kenya: [37.9083, 0.1769],
+}
+const TYPE_EXAMPLES = { text: 'Example text', date: '2024-06', number: 1000 }
+
+const exampleValue = (f) => {
+  const known = EXAMPLES[f.key]
+  if (known !== undefined) {
+    const list = Array.isArray(known) ? known : [known]
+    return f.multiple ? list : list[0]
+  }
+  const base = TYPE_EXAMPLES[f.type] ?? 'Example text'
+  if (!f.multiple) return base
+  return f.type === 'text' ? [`${base} 1`, `${base} 2`] : [base, base]
+}
+
+const storedAs = (f) => {
+  const one = { text: 'text', date: 'date (ISO, e.g. 2024-06)', number: 'number' }[f.type] || f.type
+  return f.multiple ? `list of ${f.type === 'text' ? 'texts' : f.type + 's'}` : one
+}
+
+/** Build the GeoJSON Feature a project would get with the current (unsaved) fields. */
+function exampleFeature(fields) {
+  const record = Object.fromEntries(fields.map((f) => [f.key || '?', exampleValue(f)]))
+  const toList = (v) => (v === undefined || v === null ? [] : Array.isArray(v) ? v : [v])
+  const names = toList(record.city).length ? toList(record.city) : toList(record.country)
+  const locations = names
+    .filter((n) => PLACES[n])
+    .map((n) => ({ name: n, latitude: PLACES[n][1], longitude: PLACES[n][0] }))
+  const coords = locations.map((l) => [l.longitude, l.latitude])
+  const geometry = !coords.length ? null : coords.length === 1
+    ? { type: 'Point', coordinates: coords[0] }
+    : { type: 'MultiPoint', coordinates: coords }
+  return {
+    type: 'Feature',
+    id: 'PRJ-0001',
+    geometry,
+    properties: {
+      project_id: 'PRJ-0001',
+      ...record,
+      locations,
+      source: { document: 'safe_motherhood_turkana.md', extraction_method: 'llm', model: 'qwen2.5:3b', reviewed_by_human: true },
+    },
+  }
+}
+
 const emptyField = () => ({ label: '', key: '', prompt: '', type: 'text', multiple: false, _autoKey: true, _new: true })
 
 export default function TemplateSetup({ template, onSaved }) {
@@ -208,7 +268,7 @@ export default function TemplateSetup({ template, onSaved }) {
           <div className="row wrap">
             <ConfirmButton
               label="Reset to default fields"
-              question="Replace your fields with the 8 default ones?"
+              question="Replace your fields with the 9 default ones?"
               confirmLabel="Yes, reset"
               onConfirm={reset}
               className="btn link small"
@@ -234,24 +294,52 @@ export default function TemplateSetup({ template, onSaved }) {
       <section className="card">
         <h2>What is stored</h2>
         <p className="muted">
-          Each project becomes one <a href="https://geojson.org" target="_blank" rel="noreferrer">GeoJSON</a> Feature: the
-          fields above are its <em>properties</em>, and the places found for <code>city</code> / <code>country</code> are its{' '}
-          <em>geometry</em>. GeoJSON opens in QGIS, ArcGIS, Google Earth, geojson.io and most web maps.
-          Note that GeoJSON writes coordinates as <code>[longitude, latitude]</code>.
+          Each project becomes one <a href="https://geojson.org" target="_blank" rel="noreferrer">GeoJSON</a> Feature.
+          Your {fields.length} fields above become its <em>properties</em>, in the same order; the places found for{' '}
+          <code>city</code> (or <code>country</code>) become its <em>geometry</em>. This preview follows your edits.
         </p>
-        <CodeBlock
-          data={{
-            type: 'Feature',
-            id: 'PRJ-0001',
-            geometry: { type: 'Point', coordinates: [120.2641, -9.6567] },
-            properties: Object.fromEntries([
-              ['project_id', 'PRJ-0001'],
-              ...fields.map((f) => [f.key || '?', f.multiple ? [`<${f.label || 'value'} 1>`, `<${f.label || 'value'} 2>`] : `<${f.label || 'value'}>`]),
-              ['locations', [{ name: 'Waingapu', latitude: -9.6567, longitude: 120.2641 }]],
-              ['source', { document: 'report.pdf', extraction_method: 'llm', model: 'qwen2.5:3b', reviewed_by_human: true }],
-            ]),
-          }}
-        />
+
+        <div className="stored-grid">
+          <div className="table-scroll">
+            <table className="stored">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Key in GeoJSON</th>
+                  <th>Stored as</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fields.map((f, i) => (
+                  <tr key={f.id ?? `new-${i}`}>
+                    <td>{f.label || <span className="muted">(no name)</span>}</td>
+                    <td><code>{f.key || '?'}</code></td>
+                    <td className="muted">{storedAs(f)}</td>
+                  </tr>
+                ))}
+                <tr className="system-row">
+                  <td>Places on the map</td>
+                  <td><code>locations</code> + <code>geometry</code></td>
+                  <td className="muted">added automatically from {hasMap ? 'City / Country' : 'City / Country (missing!)'}</td>
+                </tr>
+                <tr className="system-row">
+                  <td>Where it came from</td>
+                  <td><code>source</code></td>
+                  <td className="muted">added automatically</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <p className="muted small" style={{ marginBottom: 6 }}>
+              Example record. GeoJSON writes coordinates as <code>[longitude, latitude]</code>.
+            </p>
+            <CodeBlock data={exampleFeature(fields)} />
+            <p className="muted small" style={{ marginTop: 6 }}>
+              Example values – real coordinates are looked up on OpenStreetMap when a project is saved.
+            </p>
+          </div>
+        </div>
       </section>
     </div>
   )

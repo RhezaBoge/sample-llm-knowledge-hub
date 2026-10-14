@@ -38,7 +38,8 @@ DEFAULT_FIELDS = [
     {"key": "country", "label": "Country", "type": "text", "multiple": True,
      "prompt": "The country or countries where the project takes place. Use the English name."},
     {"key": "city", "label": "City", "type": "text", "multiple": True,
-     "prompt": "The cities, towns, districts or villages where the project activities take place."},
+     "prompt": "The cities, towns, districts or villages where the project activities take place. "
+               "One place name per value, without words like 'village' or 'district'."},
     {"key": "start_date", "label": "Start date", "type": "date", "multiple": False,
      "prompt": "When the project started or will start."},
     {"key": "end_date", "label": "End date", "type": "date", "multiple": False,
@@ -47,6 +48,16 @@ DEFAULT_FIELDS = [
      "prompt": "What the project does and for whom, in at most two sentences, in English."},
     {"key": "keywords", "label": "Keywords", "type": "text", "multiple": True,
      "prompt": "Three to six short keywords that describe the themes of the project, in English."},
+    {"key": "sdgs", "label": "SDGs", "type": "text", "multiple": True,
+     "prompt": "The UN Sustainable Development Goals the project contributes to, written as 'SDG <number>: <name>'. "
+               "Use the SDGs named in the document; if none are named, choose the one or two that fit best. "
+               "Only use these 17 goals, with exactly these names: "
+               "SDG 1: No Poverty; SDG 2: Zero Hunger; SDG 3: Good Health and Well-being; SDG 4: Quality Education; "
+               "SDG 5: Gender Equality; SDG 6: Clean Water and Sanitation; SDG 7: Affordable and Clean Energy; "
+               "SDG 8: Decent Work and Economic Growth; SDG 9: Industry, Innovation and Infrastructure; "
+               "SDG 10: Reduced Inequalities; SDG 11: Sustainable Cities and Communities; "
+               "SDG 12: Responsible Consumption and Production; SDG 13: Climate Action; SDG 14: Life Below Water; "
+               "SDG 15: Life on Land; SDG 16: Peace, Justice and Strong Institutions; SDG 17: Partnerships for the Goals."},
 ]
 
 # Fields with these keys have a special job: they place the project on the map.
