@@ -177,7 +177,8 @@ The app has three steps, shown at the top of the page.
    *Several values* (separated by `;`). Add, rename, reorder or remove fields and click
    **Save template**. *Show the AI prompt* displays the exact question the AI receives.
 2. **Add a project** – upload a document, paste text, or load one of the sample documents.
-   Twenty more fictional documents to try are in [docs/datatest](docs/datatest/).
+   Twenty more fictional documents to try are in [docs/datatest](docs/datatest/), together with
+   ideas for extra fields (donor, budget, beneficiaries, …) that those documents can fill.
    - **Markdown (`.md`) works best**: it keeps headings, lists and tables as clean text.
      For a document in Google Drive: open it in Google Docs → *File → Download → Markdown (.md)*.
      Word (`.docx`), PDF and `.txt` also work. Scanned PDFs (photos of pages) do not contain text.

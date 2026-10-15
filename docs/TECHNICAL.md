@@ -64,8 +64,8 @@ Everything that must be exact (formats, coordinates, storage) is done by ordinar
 
 | Service | Image | Purpose | Port on the host |
 |---|---|---|---|
-| `frontend` | built from `frontend/Dockerfile` (Node 22) | Vite dev server; forwards `/api/*` to the backend | `127.0.0.1:5173` |
-| `backend` | built from `backend/Dockerfile` (Python 3.12) | FastAPI with `uvicorn --reload` | `127.0.0.1:8000` |
+| `frontend` | built from `frontend/Dockerfile` (Node 22) | Vite dev server; forwards `/api/*` to the backend | `127.0.0.1:5173` (`APP_PORT`) |
+| `backend` | built from `backend/Dockerfile` (Python 3.12) | FastAPI with `uvicorn --reload` | `127.0.0.1:8000` (`API_PORT`) |
 | `ollama` | `ollama/ollama` | runs the language model on the CPU | none (internal only) |
 | `ollama-pull` | `ollama/ollama` | one-off job that downloads the model; profile `setup` | none |
 
@@ -73,6 +73,7 @@ Choices made for running on personal laptops:
 
 - **`restart: "no"`** on every service – nothing starts when the computer boots.
 - **Ports bound to `127.0.0.1`** – the app is not reachable from other devices on the network.
+  `APP_PORT` and `API_PORT` in `.env` change the host ports when 5173 or 8000 are already in use.
   Ollama has no published port at all; only the backend can reach it.
 - **`OLLAMA_KEEP_ALIVE=5m`** – the model is unloaded from memory 5 minutes after the last request.
 - **`OLLAMA_CONTEXT_LENGTH=8192`** – enough context for a document of about 12,000 characters plus the prompt.
@@ -317,6 +318,8 @@ All settings are environment variables, read from `.env` (copied from `.env.exam
 | `MAX_DOCUMENT_CHARS` | `12000` | longer documents are cut (with a warning) |
 | `GEOCODER` | `nominatim` | `none` disables place lookup |
 | `GEOCODER_URL` | Nominatim search URL | e.g. a self-hosted Nominatim |
+| `APP_PORT` | `5173` | host port of the web app |
+| `API_PORT` | `8000` | host port of the API |
 | `DATABASE_URL` | `sqlite:///./data/knowledge.db` | any SQLAlchemy URL |
 
 ---
