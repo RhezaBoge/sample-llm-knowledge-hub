@@ -8,7 +8,6 @@ const toPoints = (locations) =>
   (locations || []).map((loc) => ({ lat: loc.latitude, lon: loc.longitude, label: loc.name, sub: loc.found }))
 
 export default function AddProject({ template, editing, onSaved, onCancelEdit }) {
-  const [samples, setSamples] = useState([])
   const [text, setText] = useState('')
   const [filename, setFilename] = useState(null)
   const [method, setMethod] = useState('llm')
@@ -21,10 +20,6 @@ export default function AddProject({ template, editing, onSaved, onCancelEdit })
   const [preview, setPreview] = useState(null) // live checks, map points and GeoJSON
   const [panel, setPanel] = useState('map')
   const [confirmed, setConfirmed] = useState(false)
-
-  useEffect(() => {
-    api.samples().then(setSamples).catch(() => {})
-  }, [])
 
   // Load an existing project when "Edit" was clicked in the knowledge base
   useEffect(() => {
@@ -62,14 +57,6 @@ export default function AddProject({ template, editing, onSaved, onCancelEdit })
       setBusy(null)
     }
   }
-
-  const loadSample = (name) =>
-    name &&
-    run('reading', async () => {
-      const sample = await api.sample(name)
-      setText(sample.text)
-      setFilename(sample.filename)
-    })
 
   const uploadFile = (file) =>
     file &&
@@ -136,7 +123,7 @@ export default function AddProject({ template, editing, onSaved, onCancelEdit })
           <span className="step-number">2</span>
           <div>
             <h2>Provide a project document</h2>
-            <p className="muted">Upload a report, proposal or notes – or try one of the sample documents.</p>
+            <p className="muted">Upload a report, proposal or notes, or paste the text.</p>
           </div>
         </div>
 
@@ -156,10 +143,6 @@ export default function AddProject({ template, editing, onSaved, onCancelEdit })
             Upload file (.md, .docx, .pdf, .txt)
             <input type="file" accept=".md,.txt,.pdf,.docx" onChange={(e) => uploadFile(e.target.files[0])} hidden />
           </label>
-          <select value="" onChange={(e) => loadSample(e.target.value)} aria-label="Load a sample document">
-            <option value="">Load a sample document…</option>
-            {samples.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
           {filename && <span className="pill">{filename}</span>}
         </div>
 

@@ -26,8 +26,6 @@ const query = (params = {}) => {
 
 export const api = {
   health: () => request('/health'),
-  samples: () => request('/samples'),
-  sample: (name) => request(`/samples/${encodeURIComponent(name)}`),
 
   // Step 0: the template
   template: () => request('/template'),

@@ -96,8 +96,15 @@ def test_template_can_be_changed_and_reset(client):
 
 # --- Extraction ----------------------------------------------------------------
 
-def test_rules_extraction_on_sample(client):
-    text = client.get("/api/samples/01_clean_water_east_sumba.txt").json()["text"]
+SAMPLE_TEXT = """Project title: Community Water Access and Hygiene for East Sumba
+Implementing organization: Tirta Lestari Foundation
+Country: Indonesia
+Reporting period: March 2022 - February 2025
+The project built rainwater tanks in Waingapu and Lewa and closed in 2025."""
+
+
+def test_rules_extraction_on_plain_text(client):
+    text = SAMPLE_TEXT
     record = client.post("/api/extract", json={"text": text, "method": "rules"}).json()["record"]
     assert record["title"] == "Community Water Access and Hygiene for East Sumba"
     assert record["organization"] == ["Tirta Lestari Foundation"]

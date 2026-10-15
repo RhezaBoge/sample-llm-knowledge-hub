@@ -12,7 +12,6 @@ import json
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Literal
 
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
@@ -28,9 +27,6 @@ from .extractor import build_prompt, extract_with_llm, extract_with_rules
 from .locator import locate
 from .models import Project
 from .text_reader import read_document
-
-SAMPLES_DIR = Path(__file__).resolve().parent.parent / "sample_documents"
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -158,18 +154,6 @@ def _filtered(q: str | None, country: str | None):
 @app.get("/api/health")
 def health():
     return {"status": "ok", "llm": llm.status(), "geocoder": config.GEOCODER_ENABLED}
-
-
-@app.get("/api/samples")
-def list_samples():
-    return [p.name for p in sorted(SAMPLES_DIR.glob("*.txt"))]
-
-
-@app.get("/api/samples/{name}")
-def get_sample(name: str):
-    if name not in list_samples():
-        raise HTTPException(404, "Sample not found")
-    return {"filename": name, "text": (SAMPLES_DIR / name).read_text(encoding="utf-8")}
 
 
 # --------------------------------------------------------------------------

@@ -19,7 +19,7 @@ const slugify = (label) => {
   return key.slice(0, 40)
 }
 
-// Example values for the "What is stored" preview (the Safe Motherhood Turkana sample)
+// Example values for the "What is stored" preview (a fictional project)
 const EXAMPLES = {
   title: 'Safe Motherhood Turkana',
   organization: ['Afya Bora Partners'],

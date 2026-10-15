@@ -270,7 +270,6 @@ Interactive documentation is available at <http://localhost:8000/docs> while the
 | PUT | `/api/template` | replace the whole template |
 | POST | `/api/template/reset` | restore the 9 default fields |
 | POST | `/api/template/prompt` | the prompt the model would receive |
-| GET | `/api/samples`, `/api/samples/{name}` | sample documents |
 | POST | `/api/read-file` | upload → plain text |
 | POST | `/api/extract` | text → record, warnings, locations, GeoJSON, raw model output (`method`: `llm` or `rules`) |
 | POST | `/api/preview` | re-validate an edited record |
@@ -292,7 +291,7 @@ A single-page React app without a router; the current page is kept in the URL ha
 |---|---|
 | `App.jsx` | header, navigation, model status (polled every 15 s), loads the template |
 | `pages/TemplateSetup.jsx` | edit, reorder, add and remove fields; separator; prompt preview |
-| `pages/AddProject.jsx` | upload or sample → extract → review form + map / GeoJSON / document / raw answer → save |
+| `pages/AddProject.jsx` | upload or paste → extract → review form + map / GeoJSON / document / raw answer → save |
 | `pages/KnowledgeBase.jsx` | statistics, search, country filter, map of all projects, table, detail panel |
 | `components/RecordForm.jsx` | review form generated from the template |
 | `components/ProjectMap.jsx` | Leaflet map with OpenStreetMap tiles |

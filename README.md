@@ -13,7 +13,7 @@ result. Everything is saved in one knowledge base you can search, map and downlo
 - **Open:** every step is visible – the template, the exact AI prompt, the raw AI answer and the
   final GeoJSON. How it is built: [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
-> All sample documents and organizations in this project are fictional.
+> All example documents and organizations in this project are fictional.
 
 **Contents:**
 [What you need](#what-you-need) ·
@@ -176,8 +176,8 @@ The app has three steps, shown at the top of the page.
    Every field has its **own instruction for the AI**, a type (text / date / number), and a switch
    *Several values* (separated by `;`). Add, rename, reorder or remove fields and click
    **Save template**. *Show the AI prompt* displays the exact question the AI receives.
-2. **Add a project** – upload a document, paste text, or load one of the sample documents.
-   Twenty more fictional documents to try are in [docs/datatest](docs/datatest/), together with
+2. **Add a project** – upload a document or paste its text.
+   Twenty fictional documents to try are in [docs/datatest](docs/datatest/), together with
    ideas for extra fields (donor, budget, beneficiaries, …) that those documents can fill.
    - **Markdown (`.md`) works best**: it keeps headings, lists and tables as clean text.
      For a document in Google Drive: open it in Google Docs → *File → Download → Markdown (.md)*.
@@ -217,7 +217,7 @@ The default model works on most laptops. Choose another one if your laptop is sl
 | `qwen2.5:3b` **(default)** | ~2 GB | 8 GB laptop | good | most laptops |
 | `qwen2.5:7b` | ~4.7 GB | 16 GB laptop | best of the three | strong laptops |
 
-Measured on an Apple M2 Pro: `qwen2.5:7b` read a sample document in **36 seconds on the CPU only**.
+Measured on an Apple M2 Pro: `qwen2.5:7b` read a test document in **36 seconds on the CPU only**.
 Expect 20 seconds to a few minutes per document, depending on the laptop and model.
 
 **To change the model:**
@@ -331,7 +331,6 @@ in [backend/app/template.py](backend/app/template.py).
 │   │   ├── text_reader.py      # MD / DOCX / PDF / TXT → text
 │   │   ├── models.py           # SQL tables: template_fields, settings, projects
 │   │   └── database.py         # SQLAlchemy connection
-│   ├── sample_documents/       # 4 fictional project documents
 │   └── tests/                  # pytest
 ├── frontend/                   # React + Vite
 │   └── src/

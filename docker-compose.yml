@@ -27,7 +27,6 @@ services:
       - "host.docker.internal:host-gateway"         # lets Linux reach an Ollama app on the computer itself
     volumes:
       - ./backend/app:/app/app                        # edit code -> server reloads
-      - ./backend/sample_documents:/app/sample_documents
       - ./data:/app/data                              # the database file lives here
 
   frontend:
